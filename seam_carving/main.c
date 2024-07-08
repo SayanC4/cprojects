@@ -14,8 +14,7 @@ int main(int argc, char *argv[]){
   fseek(file, 0L, SEEK_END);
   int size = ftell(file);
   rewind(file);
-  unsigned char *contents;
-  contents = (unsigned char*) malloc(size * sizeof(unsigned char));
+  unsigned char contents[size];
   if (fread(contents, 1, size, file) != size) {
       printf("tf did u do dawg\n");
       return 1;
