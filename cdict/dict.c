@@ -18,7 +18,7 @@ bucket *new_bucket(char *k, char *v){
   return b;
 }
 
-int bucketEmpty(bucket* b){
+int bucketEmpty(bucket *b){
   return b -> key == NULL && b -> val == NULL;
 }
 
@@ -58,8 +58,7 @@ char *dictGet(Dict *self, char *key){
   bucket *slot = bucketAtVal(self, key);
   if(slot -> next == NULL || strcmp(slot -> key, key) == 0){
     return slot -> val;
-  } else { // Chained
-    bucket *temp = slot;
+  } else { bucket *temp = slot;
     do { // Linear search
       temp = temp -> next;
       if(strcmp(temp -> key, key) == 0) return temp -> val;
@@ -77,35 +76,10 @@ void dictSet(Dict *self, char *key, char *value){
   if(slot -> next == NULL){
     slot -> key = key;
     slot -> val = value;
-  } else { // Chain
-    bucket *temp = slot;
+  } else { bucket *temp = slot;
     while(temp -> next != NULL) temp = temp -> next;
     temp -> next = new_bucket(key, value);
   } self -> filled++; 
-}
-
-char **keys(Dict *self){
-  char *keys[self -> filled]; int k = 0;
-  for(int i = 0; i < self -> capacity; i++){
-    bucket *slot = &self -> contents[i];
-    if(bucketEmpty(slot) == 0){
-      do { keys[k] = slot -> key;
-        slot = slot -> next; k++;
-      } while(slot != NULL);
-    }
-  }
-}
-
-char **vals(Dict *self){
-  char *vals[self -> filled]; int k = 0;
-  for(int i = 0; i < self -> capacity; i++){
-    bucket *slot = &self -> contents[i];
-    if(bucketEmpty(slot) == 0){
-      do { vals[k] = slot -> val;
-        slot = slot -> next; k++;
-      } while(slot != NULL);
-    }
-  }
 }
 
 void dictRemove(Dict *self, char *key){
@@ -113,9 +87,8 @@ void dictRemove(Dict *self, char *key){
   if(slot -> next == NULL){
     slot -> key = slot -> val = NULL;
     self -> filled--;
-  } else { // Chained - TBD
-    bucket *temp = slot; bucket *prev = NULL;
-    while(temp -> next != NULL){ // Check to see if work
+  } else { bucket *temp = slot; bucket *prev = NULL;
+    while(temp -> next != NULL){ // Check to see if this works
       if(strcmp(temp -> key, key) == 0){
         if(prev != NULL) prev -> next = temp -> next;
         else slot = temp -> next;
@@ -126,14 +99,34 @@ void dictRemove(Dict *self, char *key){
   }
 }
 
-void printDict(Dict *self){
-  /*char **k = keys(self); char **v = vals(self);
-  for(int i = 0; i < self -> capacity; i++)
-    printf("'%s': '%s'\n", k[i], v[i]);
-  */
-  for(int i = 0; i < self -> capacity; i++){
+char **keys(Dict *self){ // Check
+  char *keys[self -> filled];
+  for(int i = 0; i < self -> filled; i++){
     bucket *slot = &self -> contents[i];
-    if(bucketEmpty(slot) == 0){
+    if(!bucketEmpty(slot)){
+      do { keys[i++] = slot -> key;
+        slot = slot -> next;
+      } while(slot != NULL);
+    }
+  }
+}
+
+char **vals(Dict *self){ // Check
+  char *vals[self -> filled];
+  for(int i = 0; i < self -> filled; i++){
+    bucket *slot = &self -> contents[i];
+    if(!bucketEmpty(slot)){
+      do { vals[i++] = slot -> val;
+        slot = slot -> next;
+      } while(slot != NULL);
+    }
+  }
+}
+
+void printDict(Dict *self){
+  for(int i = 0; i < self -> filled; i++){
+    bucket *slot = &self -> contents[i];
+    if(!bucketEmpty(slot)){
       do {
         printf("'%s': '%s'\n", slot -> key, slot -> val);
         slot = slot -> next;
@@ -146,7 +139,7 @@ void printHashedDict(Dict *self){
   for(int i = 0; i < self -> capacity; i++){
     printf("[%d] -", i);
     bucket *slot = &self -> contents[i];
-    if(bucketEmpty(slot) == 0){
+    if(!bucketEmpty(slot)){
       while(slot != NULL){
         printf(" '%s': '%s' -", slot -> key, slot -> val);
         slot = slot -> next;
