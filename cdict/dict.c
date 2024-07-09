@@ -8,9 +8,7 @@ typedef struct bucket {
 
 bucket *empty_bucket(){
   bucket *b = malloc(sizeof(bucket));
-  b -> key = NULL; 
-  b -> val = NULL; 
-  b -> next = NULL;
+  b -> key = b -> val = b -> next = NULL; 
   return b;
 }
 
@@ -113,11 +111,19 @@ char **vals(Dict *self){
 void dictRemove(Dict *self, char *key){
   bucket *slot = bucketAtVal(self, key);
   if(slot -> next == NULL){
-    slot -> key = NULL;
-    slot -> val = NULL;
+    slot -> key = slot -> val = NULL;
+    self -> filled--;
   } else { // Chained - TBD
-    bucket *temp = slot;
-  } self -> filled--;
+    bucket *temp = slot; bucket *prev = NULL;
+    while(temp -> next != NULL){ // Check to see if work
+      if(strcmp(temp -> key, key) == 0){
+        if(prev != NULL) prev -> next = temp -> next;
+        else slot = temp -> next;
+        free(temp); temp = NULL;
+        self -> filled--; return;
+      } prev = temp; temp = temp -> next;
+    }
+  }
 }
 
 void printDict(Dict *self){
