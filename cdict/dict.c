@@ -8,7 +8,8 @@ typedef struct bucket {
 
 bucket *empty_bucket(){
   bucket *b = malloc(sizeof(bucket));
-  b -> key = b -> val = b -> next = NULL; 
+  b -> key = b -> val = NULL; 
+  b -> next = NULL; 
   return b;
 }
 
@@ -22,12 +23,12 @@ int bucketEmpty(bucket *b){
   return b -> key == NULL && b -> val == NULL;
 }
 
-uint8_t hash(char *value){
+uint8_t hash(char *value){ 
   uint8_t sum = (uint8_t) value[0];
   for(int i = 1; i < strlen(value); i++){
     sum += (10003 * sum) ^ (int) value[i];
   } return sum;
-}
+} // a: 1, ... o: 15, p: 0, q: 1, ... z: 10
 
 typedef struct Dict {
   int filled;
@@ -73,7 +74,8 @@ void dictSet(Dict *self, char *key, char *value){
     self -> capacity *= 2;
     self -> filled = 0;
   } bucket *slot = bucketAtVal(self, key);
-  if(slot -> next == NULL){
+  if(slot -> next == NULL || strcmp(slot -> key, key) == 0){
+    if(strcmp(slot -> key, key) == 0) printf("SAME\n");
     slot -> key = key;
     slot -> val = value;
   } else { bucket *temp = slot;
@@ -99,7 +101,7 @@ void dictRemove(Dict *self, char *key){
   }
 }
 
-char **keys(Dict *self){ // Check
+char **keys(Dict *self){ // odd asf rn
   char *keys[self -> filled];
   for(int i = 0; i < self -> filled; i++){
     bucket *slot = &self -> contents[i];
@@ -111,7 +113,7 @@ char **keys(Dict *self){ // Check
   }
 }
 
-char **vals(Dict *self){ // Check
+char **vals(Dict *self){ // odd asf rn
   char *vals[self -> filled];
   for(int i = 0; i < self -> filled; i++){
     bucket *slot = &self -> contents[i];
