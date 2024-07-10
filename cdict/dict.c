@@ -72,10 +72,10 @@ void dictSet(Dict *self, char *key, char *value){
   if((self -> filled + 1) / self -> capacity > LOAD_FACTOR){
     self = realloc(self, sizeof(self) * 2);
     self -> capacity *= 2;
-    self -> filled = 0;
+    self -> filled = 0; // currently does not restore contents
   } bucket *slot = bucketAtVal(self, key);
-  if(slot -> next == NULL || strcmp(slot -> key, key) == 0){
-    if(strcmp(slot -> key, key) == 0) printf("SAME\n");
+  if(bucketEmpty(slot) || 
+    (slot -> key != NULL && strcmp(slot -> key, key) == 0)){
     slot -> key = key;
     slot -> val = value;
   } else { bucket *temp = slot;
