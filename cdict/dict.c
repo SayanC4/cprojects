@@ -41,8 +41,7 @@ Dict *new_Dict(int capacity){
   dict -> capacity = capacity;
   dict -> filled = 0;
   bucket b_arr[capacity];
-  for(int i = 0; i < capacity; i++) 
-    b_arr[i] = *empty_bucket();
+  for(int i = 0; i < capacity; i++) b_arr[i] = *empty_bucket();
   memcpy(dict -> contents, b_arr, sizeof(b_arr));
   return dict;
 }
@@ -68,14 +67,25 @@ char *dictGet(Dict *self, char *key){
   }
 }
 
-void dictSet(Dict *self, char *key, char *value){
-  if((self -> filled + 1) / self -> capacity > LOAD_FACTOR){
-    self -> capacity *= 2;
-    self -> contents = (bucket*) realloc(self -> contents, sizeof(bucket) * self -> capacity);
-    self -> filled++; // currently does not restore contents
-  } bucket *slot = bucketAtVal(self, key);
-  if(bucketEmpty(slot) || 
-    (slot -> key != NULL && strcmp(slot -> key, key) == 0)){
+void dictSet(Dict *self, char *key, char *value){ 
+  if((self -> filled + 1) / self -> capacity > LOAD_FACTOR){  // Untested
+    int captemp = self -> capacity; self -> capacity *= 2;
+    size_t csz = sizeof(bucket) * self -> capacity;
+    bucket contemps[captemp] = self -> contents;
+    self -> contents = (bucket*) realloc(self -> contents, csz);
+    bucket *curr; 
+    for(int i = 0; i < captemp; i++){
+      curr = contemps[i]; 
+      if(!bucketEmpty(curr){
+        do {
+          dictSet(self, curr -> key, curr -> val);
+          curr = curr -> next;
+        } while(curr != NULL);
+      }
+    }                                                         // Untested
+  } bucket *slot = bucketAtVal(self, key); int cmp = 1; 
+  if(slot -> key != NULL) cmp = strcmp(slot -> key, key);
+  if(bucketEmpty(slot) || (slot -> key != NULL && cmp == 0)){
     slot -> key = key;
     slot -> val = value;
   } else { bucket *temp = slot;
