@@ -70,9 +70,9 @@ char *dictGet(Dict *self, char *key){
 
 void dictSet(Dict *self, char *key, char *value){
   if((self -> filled + 1) / self -> capacity > LOAD_FACTOR){
-    self = realloc(self, sizeof(self) * 2);
     self -> capacity *= 2;
-    self -> filled = 0; // currently does not restore contents
+    self -> contents = (bucket*) realloc(self -> contents, sizeof(bucket) * self -> capacity);
+    self -> filled++; // currently does not restore contents
   } bucket *slot = bucketAtVal(self, key);
   if(bucketEmpty(slot) || 
     (slot -> key != NULL && strcmp(slot -> key, key) == 0)){
