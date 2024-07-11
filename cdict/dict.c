@@ -1,25 +1,25 @@
 #include "dict.h"
 
-typedef struct bucket {
+typedef struct Bucket {
   char *key;
   char *val;
-  struct bucket *next;
-} bucket;
+  struct Bucket *next;
+} Bucket;
 
-bucket *empty_bucket(){
-  bucket *b = malloc(sizeof(bucket));
+Bucket *empty_bucket(){
+  Bucket *b = malloc(sizeof(Bucket));
   b -> key = b -> val = NULL; 
   b -> next = NULL; 
   return b;
 }
 
-bucket *new_bucket(char *k, char *v){
-  bucket *b = empty_bucket();
+Bucket *new_bucket(char *k, char *v){
+  Bucket *b = empty_bucket();
   b -> key = k; b -> val = v;
   return b;
 }
 
-int bucketEmpty(bucket *b){
+int BucketEmpty(Bucket *b){
   return b -> key == NULL && b -> val == NULL;
 }
 
@@ -33,32 +33,32 @@ uint8_t hash(char *value){
 typedef struct Dict {
   int filled;
   int capacity;
-  bucket contents[];
+  Bucket contents[];
 } Dict;
 
-Dict *new_Dict(int capacity){
-  Dict *dict = malloc(capacity * sizeof(bucket));
+Dict *new_dict(int capacity){
+  Dict *dict = malloc(capacity * sizeof(Bucket));
   dict -> capacity = capacity;
   dict -> filled = 0;
-  bucket b_arr[capacity];
+  Bucket b_arr[capacity];
   for(int i = 0; i < capacity; i++) b_arr[i] = *empty_bucket();
   memcpy(dict -> contents, b_arr, sizeof(b_arr));
   return dict;
 }
 
-Dict *empty_Dict(){
-  return new_Dict(DEFAULT_SIZE);
+Dict *empty_dict(){
+  return new_dict(DEFAULT_SIZE);
 }
 
-bucket *bucketAtVal(Dict *self, char *val){
+Bucket *bucket_at_val(Dict *self, char *val){
   return &self -> contents[hash(val) % (self -> capacity)];
 }
 
-char *dictGet(Dict *self, char *key){
-  bucket *slot = bucketAtVal(self, key);
+char *dict_get(Dict *self, char *key){
+  Bucket *slot = bucket_at_val(self, key);
   if(slot -> next == NULL || strcmp(slot -> key, key) == 0){
     return slot -> val;
-  } else { bucket *temp = slot;
+  } else { Bucket *temp = slot;
     do { // Linear search
       temp = temp -> next;
       if(strcmp(temp -> key, key) == 0) return temp -> val;
@@ -67,40 +67,40 @@ char *dictGet(Dict *self, char *key){
   }
 }
 
-void dictSet(Dict *self, char *key, char *value){ 
+void dict_set(Dict *self, char *key, char *value){ 
   if((self -> filled + 1) / self -> capacity > LOAD_FACTOR){  // Untested
     int captemp = self -> capacity; self -> capacity *= 2;
-    size_t csz = sizeof(bucket) * self -> capacity;
-    bucket contemps[captemp] = self -> contents;
-    self -> contents = (bucket*) realloc(self -> contents, csz);
-    bucket *curr; 
+    size_t csz = sizeof(Bucket) * self -> capacity;
+    Bucket contemps[captemp] = self -> contents;
+    self -> contents = (Bucket*) realloc(self -> contents, csz);
+    Bucket *curr; 
     for(int i = 0; i < captemp; i++){
       curr = contemps[i]; 
-      if(!bucketEmpty(curr){
+      if(!BucketEmpty(curr){
         do {
-          dictSet(self, curr -> key, curr -> val);
+          dict_set(self, curr -> key, curr -> val);
           curr = curr -> next;
         } while(curr != NULL);
       }
     }                                                         // Untested
-  } bucket *slot = bucketAtVal(self, key); int cmp = 1; 
+  } Bucket *slot = bucket_at_val(self, key); int cmp = 1; 
   if(slot -> key != NULL) cmp = strcmp(slot -> key, key);
-  if(bucketEmpty(slot) || (slot -> key != NULL && cmp == 0)){
+  if(BucketEmpty(slot) || (slot -> key != NULL && cmp == 0)){
     slot -> key = key;
     slot -> val = value;
-  } else { bucket *temp = slot;
+  } else { Bucket *temp = slot;
     while(temp -> next != NULL) temp = temp -> next;
     temp -> next = new_bucket(key, value);
   } self -> filled++; 
 }
 
-void dictRemove(Dict *self, char *key){
-  bucket *slot = bucketAtVal(self, key);
+void dict_remove(Dict *self, char *key){
+  Bucket *slot = bucket_at_val(self, key);
   if(slot -> next == NULL){
     slot -> key = slot -> val = NULL;
     self -> filled--;
   } else { 
-    bucket *temp = slot; bucket *prev = NULL;
+    Bucket *temp = slot; Bucket *prev = NULL;
     while(temp -> next != NULL){           // Untested
       if(strcmp(temp -> key, key) == 0){
         if(prev != NULL) prev -> next = temp -> next;
@@ -115,8 +115,8 @@ void dictRemove(Dict *self, char *key){
 char **keys(Dict *self){
   char *keys[self -> filled];
   for(int i = 0; i < self -> filled; i++){
-    bucket *slot = &self -> contents[i];
-    if(!bucketEmpty(slot)){
+    Bucket *slot = &self -> contents[i];
+    if(!BucketEmpty(slot)){
       do { keys[i++] = slot -> key;
         slot = slot -> next;
       } while(slot != NULL);
@@ -127,8 +127,8 @@ char **keys(Dict *self){
 char **vals(Dict *self){      // Untested
   char *vals[self -> filled];
   for(int i = 0; i < self -> filled; i++){
-    bucket *slot = &self -> contents[i];
-    if(!bucketEmpty(slot)){
+    Bucket *slot = &self -> contents[i];
+    if(!BucketEmpty(slot)){
       do { vals[i++] = slot -> val;
         slot = slot -> next;
       } while(slot != NULL);
@@ -136,10 +136,10 @@ char **vals(Dict *self){      // Untested
   }
 }
 
-void printDict(Dict *self){   // Untested
+void print_dict(Dict *self){   // Untested
   for(int i = 0; i < self -> filled; i++){
-    bucket *slot = &self -> contents[i];
-    if(!bucketEmpty(slot)){
+    Bucket *slot = &self -> contents[i];
+    if(!BucketEmpty(slot)){
       do {
         printf("'%s': '%s'\n", slot -> key, slot -> val);
         slot = slot -> next;
@@ -148,11 +148,11 @@ void printDict(Dict *self){   // Untested
   }
 }
 
-void printHashedDict(Dict *self){
+void print_hashed_dict(Dict *self){
   for(int i = 0; i < self -> capacity; i++){
     printf("[%d] -", i);
-    bucket *slot = &self -> contents[i];
-    if(!bucketEmpty(slot)){
+    Bucket *slot = &self -> contents[i];
+    if(!BucketEmpty(slot)){
       while(slot != NULL){
         printf(" '%s': '%s' -", slot -> key, slot -> val);
         slot = slot -> next;
