@@ -19,7 +19,7 @@ Bucket *new_bucket(char *k, char *v){
   return b;
 }
 
-int BucketEmpty(Bucket *b){
+int bucket_empty(Bucket *b){
   return b -> key == NULL && b -> val == NULL;
 }
 
@@ -76,7 +76,7 @@ void dict_set(Dict *self, char *key, char *value){
     Bucket *curr; 
     for(int i = 0; i < captemp; i++){
       curr = contemps[i]; 
-      if(!BucketEmpty(curr){
+      if(!bucket_empty(curr){
         do {
           dict_set(self, curr -> key, curr -> val);
           curr = curr -> next;
@@ -85,7 +85,7 @@ void dict_set(Dict *self, char *key, char *value){
     }                                                         // Untested
   } Bucket *slot = bucket_at_val(self, key); int cmp = 1; 
   if(slot -> key != NULL) cmp = strcmp(slot -> key, key);
-  if(BucketEmpty(slot) || (slot -> key != NULL && cmp == 0)){
+  if(bucket_empty(slot) || (slot -> key != NULL && cmp == 0)){
     slot -> key = key;
     slot -> val = value;
   } else { Bucket *temp = slot;
@@ -116,7 +116,7 @@ char **keys(Dict *self){
   char *keys[self -> filled];
   for(int i = 0; i < self -> filled; i++){
     Bucket *slot = &self -> contents[i];
-    if(!BucketEmpty(slot)){
+    if(!bucket_empty(slot)){
       do { keys[i++] = slot -> key;
         slot = slot -> next;
       } while(slot != NULL);
@@ -128,7 +128,7 @@ char **vals(Dict *self){      // Untested
   char *vals[self -> filled];
   for(int i = 0; i < self -> filled; i++){
     Bucket *slot = &self -> contents[i];
-    if(!BucketEmpty(slot)){
+    if(!bucket_empty(slot)){
       do { vals[i++] = slot -> val;
         slot = slot -> next;
       } while(slot != NULL);
@@ -139,7 +139,7 @@ char **vals(Dict *self){      // Untested
 void print_dict(Dict *self){   // Untested
   for(int i = 0; i < self -> filled; i++){
     Bucket *slot = &self -> contents[i];
-    if(!BucketEmpty(slot)){
+    if(!bucket_empty(slot)){
       do {
         printf("'%s': '%s'\n", slot -> key, slot -> val);
         slot = slot -> next;
@@ -152,7 +152,7 @@ void print_hashed_dict(Dict *self){
   for(int i = 0; i < self -> capacity; i++){
     printf("[%d] -", i);
     Bucket *slot = &self -> contents[i];
-    if(!BucketEmpty(slot)){
+    if(!bucket_empty(slot)){
       while(slot != NULL){
         printf(" '%s': '%s' -", slot -> key, slot -> val);
         slot = slot -> next;
