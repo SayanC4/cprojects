@@ -7,12 +7,12 @@
 #define LOAD_FACTOR 0.3
 
 typedef struct Dict Dict;
-Dict *new_Dict(int capacity);
-Dict *empty_Dict();
-char *dictGet(Dict *self, char *value);
-void dictSet(Dict *self, char *key, char *value);
-void dictRemove(Dict *self, char *key);
+Dict *new_dict(int capacity);
+Dict *empty_dict();
+char *dict_get(Dict *self, char *value);
+void dict_set(Dict *self, char *key, char *value);
+void dict_remove(Dict *self, char *key);
 char **keys(Dict *self);
 char **vals(Dict *self);
-void printDict(Dict *self);
-void printHashedDict(Dict *self);
+void print_dict(Dict *self);
+void print_hashed_dict(Dict *self);
