@@ -99,19 +99,20 @@ void dictRemove(Dict *self, char *key){
   if(slot -> next == NULL){
     slot -> key = slot -> val = NULL;
     self -> filled--;
-  } else { bucket *temp = slot; bucket *prev = NULL;
-    while(temp -> next != NULL){ // Check to see if this works
+  } else { 
+    bucket *temp = slot; bucket *prev = NULL;
+    while(temp -> next != NULL){           // Untested
       if(strcmp(temp -> key, key) == 0){
         if(prev != NULL) prev -> next = temp -> next;
         else slot = temp -> next;
         free(temp); temp = NULL;
         self -> filled--; return;
-      } prev = temp; temp = temp -> next;
+      } prev = temp; temp = temp -> next;  // Untested
     }
   }
 }
 
-char **keys(Dict *self){ // odd asf rn
+char **keys(Dict *self){
   char *keys[self -> filled];
   for(int i = 0; i < self -> filled; i++){
     bucket *slot = &self -> contents[i];
@@ -123,7 +124,7 @@ char **keys(Dict *self){ // odd asf rn
   }
 }
 
-char **vals(Dict *self){ // odd asf rn
+char **vals(Dict *self){      // Untested
   char *vals[self -> filled];
   for(int i = 0; i < self -> filled; i++){
     bucket *slot = &self -> contents[i];
@@ -135,7 +136,7 @@ char **vals(Dict *self){ // odd asf rn
   }
 }
 
-void printDict(Dict *self){
+void printDict(Dict *self){   // Untested
   for(int i = 0; i < self -> filled; i++){
     bucket *slot = &self -> contents[i];
     if(!bucketEmpty(slot)){
