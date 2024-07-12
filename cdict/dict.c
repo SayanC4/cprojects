@@ -85,7 +85,7 @@ void dict_set(Dict *self, char *key, char *value){
     }                                                         // Untested
   } Bucket *slot = bucket_at_val(self, key); int cmp = 1; 
   if(slot -> key != NULL) cmp = strcmp(slot -> key, key);
-  if(bucket_empty(slot) || (slot -> key != NULL && cmp == 0)){
+  if(bucket_empty(slot) || cmp == 0){
     slot -> key = key;
     slot -> val = value;
   } else { Bucket *temp = slot;
