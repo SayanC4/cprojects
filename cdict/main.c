@@ -2,9 +2,9 @@
 #include "dict.h"
 
 int main(void){
-  Dict* dict = new_Dict(16);
-  dictSet(dict, "a", "Hello.");
-  dictSet(dict, "q", "Test");
-  printHashedDict(dict);
+  Dict* dict = new_dict(16);
+  dict_set(dict, "a", "Hello.");
+  dict_set(dict, "q", "Test");
+  print_hashed_dict(dict);
   return 0;
 }
