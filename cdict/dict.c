@@ -71,12 +71,12 @@ void dict_set(Dict *self, char *key, char *value){
   if((self -> filled + 1) / self -> capacity > LOAD_FACTOR){  // Untested
     int captemp = self -> capacity; self -> capacity *= 2;
     size_t csz = sizeof(Bucket) * self -> capacity;
-    Bucket contemps[captemp] = self -> contents;
-    self -> contents = (Bucket*) realloc(self -> contents, csz);
+    Bucket contemps[captemp]; memcpy(contemps, self -> contents, sizeof(Bucket) * captemp);
+    memcpy(self -> contents, (Bucket*) malloc(csz), csz);
     Bucket *curr; 
     for(int i = 0; i < captemp; i++){
-      curr = contemps[i]; 
-      if(!bucket_empty(curr){
+      curr = &contemps[i]; 
+      if(!bucket_empty(curr)){
         do {
           dict_set(self, curr -> key, curr -> val);
           curr = curr -> next;
